@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaprio - AI Workspace</title>
+    <!-- 
+    ========================================
+    GAPRIO CHAT UI - Pixel-Perfect Clone
+    ========================================
+    Colors extracted from gaprio.in:
+    - Background: #0A0A0F (near-black)
+    - Card BG: #131318 (dark gray)
+    - Sidebar BG: #0D0D12 
+    - Primary/Accent: #F97316 (orange)
+    - Text Primary: #FFFFFF
+    - Text Secondary: #9CA3AF
+    - Border: rgba(255,255,255,0.08)
+    
+    Typography: Inter font family
+    -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+           CSS VARIABLES - Gaprio Color Palette
+           ======================================== */
+        :root {
+            /* Exact colors from gaprio.in */
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #0D0D12;
+            --bg-card: #131318;
+            --bg-input: #1A1A20;
+            --bg-hover: #1F1F26;
+            
+            /* Orange accent from gaprio.in */
+            --accent: #F97316;
+            --accent-hover: #FB923C;
+            --accent-glow: rgba(249, 115, 22, 0.3);
+            
+            /* Text colors */
+            --text-primary: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            /* Borders */
+            --border: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.12);
+            
+            /* Shadows */
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            
+            /* Sizing */
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --input-height: 72px;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+        
+        /* ========================================
+           RESET & BASE STYLES
+           ======================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* ========================================
+           LAYOUT STRUCTURE
+           ======================================== */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+        
+        /* ========================================
+           LEFT SIDEBAR - Gaprio Branding
+           ======================================== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        
+        /* Logo Section */
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        /* Gaprio Network Logo - SVG recreation */
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        /* Navigation */
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 8px 12px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--accent);
+        }
+        
+        .nav-item-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+        
+        /* New Chat Button */
+        .new-chat-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: calc(100% - 24px);
+            margin: 0 12px 16px;
+            padding: 12px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .new-chat-btn:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), #FB923C);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #22C55E;
+            border-radius: 50%;
+        }
+        
+        /* ========================================
+           MAIN CHAT AREA
+           ======================================== */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: var(--bg-primary);
+        }
+        
+        /* Chat Header */
+        .chat-header {
+            height: var(--header-height);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-title h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .chat-title-badge {
+            padding: 4px 10px;
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        
+        .chat-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-light);
+        }
+        
+        /* Chat Messages Container */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            /* Custom scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+        
+        /* Message Bubbles */
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+            animation: messageSlide 0.3s ease;
+        }
+        
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.user {
+            margin-left: auto;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, var(--accent), #FB923C);
+            color: var(--bg-primary);
+        }
+        
+        .message.user .message-avatar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+        
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .message-bubble {
+            padding: 14px 18px;
+            border-radius: var(--radius-lg);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+        
+        .message.assistant .message-bubble {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top-left-radius: 4px;
+            color: var(--text-primary);
+        }
+        
+        .message.user .message-bubble {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-top-right-radius: 4px;
+        }
+        
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            padding: 0 4px;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .message-tools {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+        
+        /* Welcome Screen */
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 24px;
+            text-align: center;
+        }
+        
+        .welcome-logo {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 24px;
+        }
+        
+        .welcome-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .welcome-title span {
+            color: var(--accent);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin-bottom: 32px;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            max-width: 600px;
+        }
+        
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-action:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-light);
+        }
+        
+        .quick-action-icon {
+            font-size: 1rem;
+        }
+        
+        /* ========================================
+           CHAT INPUT AREA
+           ======================================== */
+        .chat-input-container {
+            padding: 16px 24px 24px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .chat-input-wrapper:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        
+        .chat-input {
+            flex: 1;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 10px 12px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            resize: none;
+        }
+        
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--bg-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .send-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+        
+        .send-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .send-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            border-top-left-radius: 4px;
+            width: fit-content;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+        
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+        
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .chat-messages {
+                padding: 16px;
+            }
+            
+            .message {
+                max-width: 92%;
+            }
+            
+            .chat-input-container {
+                padding: 12px 16px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ========================================
+             LEFT SIDEBAR
+             ======================================== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="https://gaprio.in" class="logo" target="_blank">
+                    <!-- Gaprio Network Logo - SVG -->
+                    <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Network nodes and connections -->
+                        <circle cx="16" cy="16" r="4" fill="#F97316"/>
+                        <circle cx="6" cy="10" r="3" fill="white"/>
+                        <circle cx="26" cy="10" r="3" fill="white"/>
+                        <circle cx="6" cy="24" r="3" fill="white"/>
+                        <circle cx="26" cy="24" r="3" fill="white"/>
+                        <circle cx="16" cy="4" r="2.5" fill="#F97316"/>
+                        <circle cx="16" cy="28" r="2.5" fill="#F97316"/>
+                        <!-- Connection lines -->
+                        <line x1="16" y1="12" x2="16" y2="6.5" stroke="#F97316" stroke-width="2"/>
+                        <line x1="16" y1="20" x2="16" y2="25.5" stroke="#F97316" stroke-width="2"/>
+                        <line x1="12.5" y1="14" x2="8.5" y2="11.5" stroke="white" stroke-width="2"/>
+                        <line x1="19.5" y1="14" x2="23.5" y2="11.5" stroke="white" stroke-width="2"/>
+                        <line x1="12.5" y1="18" x2="8.5" y2="22.5" stroke="white" stroke-width="2"/>
+                        <line x1="19.5" y1="18" x2="23.5" y2="22.5" stroke="white" stroke-width="2"/>
+                    </svg>
+                    <span class="logo-text">Gaprio</span>
+                </a>
+            </div>
+            
+            <button class="new-chat-btn" onclick="newChat()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                New Chat
+            </button>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Workspace</div>
+                    <div class="nav-item active">
+                        <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                        Brain Chat
+                    </div>
+                    <div class="nav-item">
+                        <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                        Automations
+                    </div>
+                    <div class="nav-item">
+                        <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 3v18M3 9h18"/>
+                        </svg>
+                        Integrations
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Connected Tools</div>
+                    <div class="nav-item">
+                        <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2-3-1.4-4.5-5-4-8.5.5-3.5 3-5.5 5-6.5"/>
+                        </svg>
+                        Slack
+                    </div>
+                    <div class="nav-item">
+                        <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+                        </svg>
+                        GitHub
+                    </div>
+                    <div class="nav-item">
+                        <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        Asana
+                    </div>
+                    <div class="nav-item">
+                        <svg class="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+                            <rect x="8" y="2" width="8" height="4" rx="1"/>
+                        </svg>
+                        Notion
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">U</div>
+                    <div class="user-details">
+                        <div class="user-name">Workspace</div>
+                        <div class="user-status">
+                            <span class="status-dot"></span>
+                            <span id="toolsCount">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- ========================================
+             MAIN CHAT AREA
+             ======================================== -->
+        <main class="main-content">
+            <header class="chat-header">
+                <div class="chat-title">
+                    <h1>Brain Chat</h1>
+                    <span class="chat-title-badge">AI Powered</span>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn" title="Settings">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome Screen -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <svg class="welcome-logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="32" cy="32" r="8" fill="#F97316"/>
+                        <circle cx="12" cy="20" r="6" fill="white"/>
+                        <circle cx="52" cy="20" r="6" fill="white"/>
+                        <circle cx="12" cy="48" r="6" fill="white"/>
+                        <circle cx="52" cy="48" r="6" fill="white"/>
+                        <circle cx="32" cy="8" r="5" fill="#F97316"/>
+                        <circle cx="32" cy="56" r="5" fill="#F97316"/>
+                        <line x1="32" y1="24" x2="32" y2="13" stroke="#F97316" stroke-width="4"/>
+                        <line x1="32" y1="40" x2="32" y2="51" stroke="#F97316" stroke-width="4"/>
+                        <line x1="25" y1="28" x2="17" y2="23" stroke="white" stroke-width="4"/>
+                        <line x1="39" y1="28" x2="47" y2="23" stroke="white" stroke-width="4"/>
+                        <line x1="25" y1="36" x2="17" y2="45" stroke="white" stroke-width="4"/>
+                        <line x1="39" y1="36" x2="47" y2="45" stroke="white" stroke-width="4"/>
+                    </svg>
+                    <h2 class="welcome-title">The AI Brain for Your <span>Enterprise</span></h2>
+                    <p class="welcome-subtitle">Connect your tools, automate workflows, and turn everyday coordination into outcomes.</p>
+                    <div class="quick-actions">
+                        <div class="quick-action" onclick="sendQuickMessage('Create a task in Asana')">
+                            <span class="quick-action-icon">📋</span>
+                            Create Asana Task
+                        </div>
+                        <div class="quick-action" onclick="sendQuickMessage('Post a message to Slack')">
+                            <span class="quick-action-icon">💬</span>
+                            Post to Slack
+                        </div>
+                        <div class="quick-action" onclick="sendQuickMessage('Create a GitHub issue')">
+                            <span class="quick-action-icon">🐙</span>
+                            GitHub Issue
+                        </div>
+                        <div class="quick-action" onclick="sendQuickMessage('Search Notion')">
+                            <span class="quick-action-icon">📝</span>
+                            Search Notion
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        class="chat-input" 
+                        id="messageInput" 
+                        placeholder="Ask Gaprio anything..." 
+                        rows="1"
+                        autofocus
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- ========================================
+         JAVASCRIPT
+         ======================================== -->
+    <script>
+        // Session management
+        let sessionId = null;
+        
+        // DOM elements
+        const chatMessages = document.getElementById('chatMessages');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const toolsCount = document.getElementById('toolsCount');
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+        
+        // Send on Enter (Shift+Enter for new line)
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!sendBtn.disabled) sendMessage();
+            }
+        });
+        
+        // Quick action messages
+        function sendQuickMessage(text) {
+            messageInput.value = text;
+            sendMessage();
+        }
+        
+        // New chat
+        function newChat() {
+            sessionId = null;
+            chatMessages.innerHTML = '';
+            chatMessages.appendChild(welcomeScreen);
+            welcomeScreen.style.display = 'flex';
+        }
+        
+        // Send message
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Hide welcome screen
+            if (welcomeScreen) {
+                welcomeScreen.style.display = 'none';
+            }
+            
+            // Add user message
+            addMessage(message, 'user');
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            sendBtn.disabled = true;
+            
+            // Show typing indicator
+            const typingEl = showTyping();
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        session_id: sessionId,
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Request failed');
+                }
+                
+                sessionId = data.session_id;
+                typingEl.remove();
+                
+                // Format tools
+                let tools = [];
+                if (data.tool_calls && data.tool_calls.length > 0) {
+                    tools = data.tool_calls.map(t => t.name);
+                }
+                
+                addMessage(data.response, 'assistant', tools);
+                
+            } catch (error) {
+                typingEl.remove();
+                addMessage('Error: ' + error.message, 'assistant', [], true);
+            } finally {
+                sendBtn.disabled = false;
+                messageInput.focus();
+            }
+        }
+        
+        // Add message to chat
+        function addMessage(text, type, tools = [], isError = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            
+            const avatar = type === 'assistant' ? 'G' : 'U';
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            let toolsHtml = '';
+            if (tools.length > 0) {
+                toolsHtml = `<span class="message-tools">⚡ ${tools.join(', ')}</span>`;
+            }
+            
+            msgDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <div class="message-bubble${isError ? ' error' : ''}">${text}</div>
+                    <div class="message-meta">
+                        <span class="message-time">${time}</span>
+                        ${toolsHtml}
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Show typing indicator
+        function showTyping() {
+            const div = document.createElement('div');
+            div.className = 'message assistant';
+            div.innerHTML = `
+                <div class="message-avatar">G</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return div;
+        }
+        
+        // Check API health on load
+        fetch('/api/health')
+            .then(r => r.json())
+            .then(data => {
+                toolsCount.textContent = `${data.tools_count} tools ready`;
+            })
+            .catch(() => {
+                toolsCount.textContent = 'Offline';
+            });
+    </script>
+</body>
+</html>
