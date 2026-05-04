@@ -116,8 +116,8 @@ class FileMemory:
                 "Tool-specific configuration and environment details.\n\n"
                 "## Accounts\n\n"
                 "- Slack: Connected\n"
-                "- GitHub: (configure in .env)\n"
-                "- Notion: (configure in .env)\n\n"
+                "- Google: (configure in .env)\n"
+                "- Asana: (configure in .env)\n\n"
                 "## Notes\n\n"
                 "Add environment-specific notes here.\n"
             )

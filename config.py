@@ -19,8 +19,6 @@ class Settings(BaseSettings):
     Settings are organized by component:
     - Slack: Bot and app tokens for Slack integration
     - LLM: Provider configuration (Ollama or OpenAI)
-    - GitHub: Token for issue creation
-    - Notion: Token and database for page creation
     - RAG: Vector store and indexing configuration
     - Memory: File-based memory settings
     """
@@ -106,34 +104,7 @@ class Settings(BaseSettings):
         default="https://openrouter.ai/api/v1",
         description="OpenRouter API base URL"
     )
-    
-    # -------------------------------------------------------------------------
-    # GitHub Configuration
-    # -------------------------------------------------------------------------
-    github_token: str = Field(
-        default="",
-        description="GitHub Personal Access Token"
-    )
-    github_default_owner: str = Field(
-        default="",
-        description="Default GitHub username/organization for repositories"
-    )
-    
-    # -------------------------------------------------------------------------
-    # Notion Configuration
-    # -------------------------------------------------------------------------
-    notion_token: str = Field(
-        default="",
-        description="Notion Integration Token"
-    )
-    notion_default_database_id: str = Field(
-        default="",
-        description="Default Notion database ID for page creation"
-    )
-    notion_user_map: dict[str, str] = Field(
-        default_factory=dict,
-        description="Map of lowercase names to Notion user IDs, e.g. {'hanu': 'user-id-here'}"
-    )
+
     
     # -------------------------------------------------------------------------
     # Asana Configuration

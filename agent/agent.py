@@ -259,7 +259,6 @@ class Agent:
         """Convert tool_name like 'asana_create_task' into 'create task in Asana'."""
         service_map = {
             "google": "Gmail/Google", "slack": "Slack", "asana": "Asana",
-            "github": "GitHub", "notion": "Notion", "jira": "Jira",
         }
         parts = tool_name.split("_", 1)
         service = service_map.get(parts[0], parts[0].title())
@@ -357,10 +356,6 @@ class Agent:
             "spreadsheet", "contact",
             # Slack
             "slack", "channel", "#",
-            # GitHub
-            "github", "repo", "issue", "pull request",
-            # Notion
-            "notion", "page",
             # Asana
             "asana", "task", "project",
         ]
@@ -433,8 +428,6 @@ class Agent:
             "asana": ["asana"],
             "slack": ["slack", "#"],
             "google": ["email", "gmail", "calendar", "event", "drive", "doc", "sheet", "spreadsheet", "contact"],
-            "github": ["github", "repo", "issue", "pull request"],
-            "notion": ["notion"],
         }
         
         detected_services = set()
@@ -733,10 +726,8 @@ class Agent:
                     
                     # Extract common params for all tool types
                     common_params = [
-                        # Asana/Notion task params
+                        # Asana task params
                         "name", "title", "project", "assignee", "due_on", "due_date", "content", "notes",
-                        # Notion params
-                        "page_id", "parent_id", "query", "limit",
                         # Slack params
                         "channel", "text", "thread_ts", "hours",
                         # Google params
@@ -975,7 +966,7 @@ Write a brief, friendly summary:"""
             is_generic = any(phrase in response_text.lower() for phrase in generic_phrases)
             
             if is_generic:
-                response_text = "Hey! How can I help you today? I can manage your emails, calendar, drive, docs, sheets, contacts, Slack, GitHub, Notion, and Asana."
+                response_text = "Hey! How can I help you today? I can manage your emails, calendar, drive, docs, sheets, contacts, Slack, and Asana."
             
             return AgentResponse(text=response_text)
             
@@ -1269,7 +1260,7 @@ Write a brief, friendly summary:"""
     @staticmethod
     def _friendly_tool_name(tool_name: str) -> str:
         """Convert tool_name like 'google_send_email' to 'Send Email'."""
-        name = tool_name.replace("google_", "").replace("slack_", "").replace("asana_", "").replace("notion_", "")
+        name = tool_name.replace("google_", "").replace("slack_", "").replace("asana_", "")
         return name.replace("_", " ").title()
     
     async def _update_memory(

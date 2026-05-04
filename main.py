@@ -24,8 +24,7 @@ from gaprio.rag.indexer import SlackIndexer
 from gaprio.rag.retriever import Retriever
 from gaprio.mcp.base_server import MCPRegistry
 from gaprio.mcp.slack_server import SlackMCPServer
-from gaprio.mcp.github_server import GitHubMCPServer
-from gaprio.mcp.notion_server import NotionMCPServer
+
 from gaprio.mcp.external_server import ExternalMCPServer
 from gaprio.mcp.dynamic_server import DynamicToolServer
 from gaprio.slack.app import create_slack_app, create_socket_mode_handler
@@ -65,21 +64,7 @@ def create_mcp_registry(slack_client=None) -> MCPRegistry:
     slack_server = SlackMCPServer(slack_client)
     registry.register(slack_server)
     
-    # GitHub MCP Server (if configured)
-    if settings.github_token:
-        github_server = GitHubMCPServer()
-        registry.register(github_server)
-        logger.info("GitHub MCP server enabled")
-    else:
-        logger.warning("GitHub token not configured - GitHub tools disabled")
-    
-    # Notion MCP Server (if configured)
-    if settings.notion_token:
-        notion_server = NotionMCPServer()
-        registry.register(notion_server)
-        logger.info("Notion MCP server enabled")
-    else:
-        logger.warning("Notion token not configured - Notion tools disabled")
+
     
     # Asana MCP Server (if configured)
     if settings.asana_refresh_token or settings.asana_access_token:

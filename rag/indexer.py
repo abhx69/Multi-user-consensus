@@ -356,3 +356,81 @@ class SlackIndexer:
         except Exception as e:
             logger.error(f"Error indexing recent: {e}")
             return {"success": False, "error": str(e)}
+    
+    async def index_emails(self, emails: list[dict], user_id: str) -> int:
+        """Index Gmail emails into ChromaDB for semantic search."""
+        collection_name = f"emails_{user_id}"
+        collection = self.vector_store.get_or_create_collection(collection_name)
+
+        documents = []
+        metadatas = []
+        ids = []
+
+        for email in emails:
+            doc_text = (
+                f"From: {email.get('from', '')}\n"
+                f"Subject: {email.get('subject', '')}\n"
+                f"Body: {email.get('snippet', email.get('body', ''))}"
+            )
+            documents.append(doc_text)
+            metadatas.append({
+                "from": email.get("from", ""),
+                "subject": email.get("subject", ""),
+                "date": email.get("date", ""),
+                "email_id": email.get("id", ""),
+            })
+            ids.append(f"email_{email.get('id', '')}")
+
+        if documents:
+            collection.add(documents=documents, metadatas=metadatas, ids=ids)
+
+        return len(documents)
+
+    async def index_docs(self, docs: list[dict], user_id: str) -> int:
+        """Index Google Docs into ChromaDB for semantic search."""
+        collection_name = f"docs_{user_id}"
+        collection = self.vector_store.get_or_create_collection(collection_name)
+
+        documents = []
+        metadatas = []
+        ids = []
+
+        for doc in docs:
+            doc_text = f"Title: {doc.get('title', '')}\nContent: {doc.get('content', '')[:2000]}"
+            documents.append(doc_text)
+            metadatas.append({
+                "title": doc.get("title", ""),
+                "doc_id": doc.get("id", ""),
+                "modified": doc.get("modifiedTime", ""),
+            })
+            ids.append(f"doc_{doc.get('id', '')}")
+
+        if documents:
+            collection.add(documents=documents, metadatas=metadatas, ids=ids)
+
+        return len(documents)
+
+    async def index_asana_tasks(self, tasks: list[dict], workspace_id: str) -> int:
+        """Index Asana tasks into ChromaDB for semantic search."""
+        collection_name = f"asana_{workspace_id}"
+        collection = self.vector_store.get_or_create_collection(collection_name)
+
+        documents = []
+        metadatas = []
+        ids = []
+
+        for task in tasks:
+            doc_text = f"Task: {task.get('name', '')}\nNotes: {task.get('notes', '')}"
+            documents.append(doc_text)
+            metadatas.append({
+                "name": task.get("name", ""),
+                "gid": task.get("gid", ""),
+                "project": task.get("project_name", ""),
+                "assignee": task.get("assignee", {}).get("name", ""),
+            })
+            ids.append(f"asana_{task.get('gid', '')}")
+
+        if documents:
+            collection.add(documents=documents, metadatas=metadatas, ids=ids)
+
+        return len(documents)

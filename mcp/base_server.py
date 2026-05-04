@@ -3,7 +3,7 @@ Base MCP Server implementation.
 
 Provides the foundation for all MCP (Model Context Protocol) tool servers.
 Each server exposes a set of tools that the agent can invoke to perform
-actions on external systems (Slack, GitHub, Notion, etc.).
+actions on external systems (Slack, Google, Asana, etc.).
 
 The MCP pattern provides:
 - Consistent tool interface for the agent
@@ -120,7 +120,7 @@ class BaseMCPServer(ABC):
         Initialize the MCP server.
         
         Args:
-            name: Server name (e.g., "slack", "github")
+            name: Server name (e.g., "slack", "google")
         """
         self.name = name
         self.tools: dict[str, MCPTool] = {}
@@ -228,7 +228,7 @@ class MCPRegistry:
     Usage:
         registry = MCPRegistry()
         registry.register(SlackMCPServer())
-        registry.register(GitHubMCPServer())
+        registry.register(GoogleMCPServer())
         
         # Get all tools
         tools = registry.get_all_tools()
